@@ -3,7 +3,7 @@ require "json"
 require "csv"
 require "date"
 
-STATES = [
+STATES = {
   illinois: {
     url: "http://www.dph.illinois.gov/sites/default/files/COVID19/COVID19CountyResults20200323.json",
     root_node: ["characteristics_by_county", "values"],
@@ -41,16 +41,15 @@ STATES = [
       deaths: "Deaths"
     }
   }
-]
+}
 
 STATES.each do |state|
-  puts "Processing #{state.first.first} ..."
+  puts "Processing #{state.first} ..."
   body = Net::HTTP.get(URI(state.last[:url]))
   json = JSON.parse(body)
 
-  binding.irb
-
-  CSV.open("#{state.first.first.downcase}#{Date.today.iso8601}.csv", "wb") do |csv|
+  CSV.open("#{state.first.to_s}#{Date.today.iso8601}.csv", "wb") do |csv|
+    binding.irb
     csv << %w[County Positives Deaths Date State]
 
     enumerator = state[:root_node] ? json[state[:root_node]] : json
